@@ -14,24 +14,24 @@ back_icon = pygame.image.load('ui/back.png')
 forward_icon = pygame.image.load('ui/forward.png')
 catalog.linestodraw = artistindex
 def clamp(n, min, max): 
-    if n < min: 
+    if n < min:
         return min
-    elif n > max: 
+    elif n > max:
         return max
     else: 
         return n
 
 class tintedsprite():
     def draw(self, image, color, pos):
-        tinted = pygame.Surface(image.get_size(), pygame.SRCALPHA)
+        self.tinted = pygame.Surface(image.get_size(), pygame.SRCALPHA)
         img_array = pygame.surfarray.array_alpha(image)
-        tinted.fill((color[0], color[1], color[2], 255))
-        tinted_array = pygame.surfarray.pixels_alpha(tinted)
+        self.tinted.fill((color[0], color[1], color[2], 255))
+        tinted_array = pygame.surfarray.pixels_alpha(self.tinted)
         # Copy the alpha values from the original to preserve transparency
         tinted_array[:] = img_array
         del tinted_array
         # Draw the result to screen
-        screen.blit(tinted, pos)
+        screen.blit(self.tinted, pos)
 
 class cover():
     def __init__(self, fromsong):
@@ -50,7 +50,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
+            if event.key == pygame.K_TAB:
                 catalog.toggle()
             if event.key == pygame.K_SPACE:
                 if mp.songplaying:
@@ -58,18 +58,20 @@ while running:
                 else:
                     mp.resume_music()
             if catalog.viewingcatalog:
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_s:
                     catalog.selected += 1
                     catalog.selected = clamp(catalog.selected, 0, len(catalog.linestodraw) - 1)
                     print(catalog.selected)
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_w:
                     catalog.selected -= 1
                     catalog.selected = clamp(catalog.selected, 0, len(catalog.linestodraw) - 1)
                     print(catalog.selected)
-                if event.key == pygame.K_p:
+                if event.key == pygame.K_d:
                     catalog.select()
-                if event.key == pygame.K_o:
+                if event.key == pygame.K_a:
                     catalog.back()
+                if event.key == pygame.K_e:
+                    catalog.scroll(True)
     
     screen.fill((background_color))
 

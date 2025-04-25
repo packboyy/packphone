@@ -5,6 +5,7 @@ from index import *
 index.refreshsongindex()
 index.refreshartistindex()
 class catalog():
+    page = 'Index'
     viewingcatalog = False
     #catalog animation
     pos = -screen_width  # start off-screen to the left
@@ -12,7 +13,6 @@ class catalog():
     is_animating = True
     previous_catalog_state = False
     target_position = 0
-    catalogstate = 'artists'
     #selection
     selected = 0
 
@@ -46,18 +46,30 @@ class catalog():
         catalog.is_animating = True
     
     def drawcatalog():
-        pygame.draw.rect(screen, border_color, pygame.Rect((catalog.pos, 0), (screen_width-catalogpadding, screen_height)))
-        pygame.draw.rect(screen, background_color, pygame.Rect((catalog.pos, 0), (screen_width-catalogpadding-2, screen_height)))
+        pygame.draw.rect(screen, border_color, pygame.Rect((catalog.pos, 0), (screen_width-catalogpadding+2, screen_height)))
+        pygame.draw.rect(screen, background_color, pygame.Rect((catalog.pos, 0), (screen_width-catalogpadding, screen_height)))
         line = 0
         for i in catalog.linestodraw:
             entrytext = i
             if i in songindex:
                 entrytext = i.songtitle
             if line == catalog.selected:
-                font.render_to(screen, (catalog.pos + padding * 2, padding + line * font_size), str(entrytext), border_color)
+                font.render_to(screen, (catalog.pos + padding * 2, padding + (font_size * 2) + line * font_size), str(entrytext), border_color)
             else:
-                font.render_to(screen, (catalog.pos + padding, padding + line * font_size), str(entrytext), accent_color)
+                font.render_to(screen, (catalog.pos + padding, padding + (font_size * 2) + line * font_size), str(entrytext), accent_color)
             line += 1
+        #render header with pages
+        headerwidth = (screen_width - catalogpadding - padding*2)
+        pygame.draw.rect(screen, accent_color, pygame.Rect(catalog.pos + padding, (font_size * 2) - padding*2, screen_width - catalogpadding - padding*2, padding))
+        if catalog.page == 'Index':
+            font.render_to(screen, (catalog.pos + padding, padding), str(catalog.page), border_color)
+            pygame.draw.rect(screen, border_color, pygame.Rect(catalog.pos + padding, (font_size * 2) - padding*2, headerwidth/3, padding))
+        if catalog.page == 'Albums':
+            font.render_to(screen, (catalog.pos + (screen_width-catalogpadding)/2 - font.get_rect(str(catalog.page)).width/2, padding), str(catalog.page), border_color)
+            pygame.draw.rect(screen, border_color, pygame.Rect(catalog.pos + padding, (font_size * 2) - padding*2, headerwidth/3, padding))
+
+
+        
     
     def toggle():
         catalog.viewingcatalog = (not catalog.viewingcatalog)
