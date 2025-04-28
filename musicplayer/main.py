@@ -1,6 +1,6 @@
 import pygame
-from catalog import *
 from settings import *
+from catalog import *
 from musicplayer import musicplayer as mp
 import io
 
@@ -13,13 +13,6 @@ play_icon = pygame.image.load('ui/play.png')
 back_icon = pygame.image.load('ui/back.png')
 forward_icon = pygame.image.load('ui/forward.png')
 catalog.linestodraw = artistindex
-def clamp(n, min, max): 
-    if n < min:
-        return min
-    elif n > max:
-        return max
-    else: 
-        return n
 
 class tintedsprite():
     def draw(self, image, color, pos):
@@ -72,6 +65,8 @@ while running:
                     catalog.back()
                 if event.key == pygame.K_e:
                     catalog.scroll(True)
+                if event.key == pygame.K_q:
+                    catalog.scroll(False)
     
     screen.fill((background_color))
 
@@ -88,7 +83,7 @@ while running:
     artist_name = mp.nowplaying.artist if mp.nowplaying else '...'
     font.render_to(screen, (padding, screen_width + padding + font_size), str(artist_name), border_color)
     album_name = mp.nowplaying.album if mp.nowplaying else '...'
-    font.render_to(screen, (screen_width-padding, screen_width + padding + font_size), str(album_name), border_color)
+    font.render_to(screen, (screen_width-padding - font.get_rect(album_name).width, screen_width + padding + font_size), str(album_name), border_color)
     #SONG POSITION BAR
 
     pygame.draw.rect(screen, accent_color, pygame.Rect(padding, screen_width + (2*padding) + (2*font_size), (screen_width-(padding*2)), 10))
@@ -104,6 +99,6 @@ while running:
         catalog.drawcatalog()
 
     pygame.display.flip()
-    pygame.time.Clock().tick(60)
+    pygame.time.Clock().tick(120)
 
 pygame.quit()

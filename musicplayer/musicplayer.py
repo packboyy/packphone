@@ -10,6 +10,7 @@ class musicplayer:
     def init(cls):
         pygame.init()
         pygame.mixer.init()
+        pygame.mixer.pre_init(buffer=4096)
     @classmethod
     def play_music(cls, song):
         cls.nowplaying = song

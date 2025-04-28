@@ -1,9 +1,14 @@
 from tinytag import TinyTag
 #catalog index
 songindex = []
+albumindex = []
 artistindex = []
+artistindex_lastselection = 0
 currentartist_albumindex = []
+
+currentartist_albumindex_lastselection = 0
 currentalbum_songindex = []
+currentalbum_songindex_lastselection = 0
 
 class song():
     def __init__(self, songpath):
@@ -26,19 +31,24 @@ class index():
                     songpath = os.path.join(root, file)
                     new_song_entry = song(songpath)
                     songindex.append(new_song_entry)
+    def refreshalbumindex():
+        albumindex.clear()
+        for i in songindex:
+            if i.album not in albumindex:
+                albumindex.append(i.album)
     def refreshartistindex():
+        artistindex.clear()
         for i in songindex:
             if i.artist not in artistindex:
                 artistindex.append(i.artist)
     def getalbumsfromartist(artist):
+        currentartist_albumindex.clear()
         for i in songindex:
             if i.artist == artist:
                 if i.album not in currentartist_albumindex:
                     currentartist_albumindex.append(i.album)
     def getsongsfromalbum(album):
+        currentalbum_songindex.clear()
         for i in songindex:
             if i.album == album:
                 currentalbum_songindex.append(i)
-
-    
-    

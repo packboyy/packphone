@@ -11,9 +11,17 @@ pygame.display.set_caption("PackPager")
 
 #styling
 font_size = 16
-font = pygame.freetype.Font("oxanium.ttf", font_size)
+font = pygame.freetype.Font('oxanium.ttf', font_size)
 background_color = (255, 255, 255)
 accent_color = (100, 190, 240)
 border_color = (100, 100, 255)
 catalogpadding = 40
 padding = 5
+
+def clamp(n, min, max): 
+    if n < min:
+        return min
+    elif n > max:
+        return max
+    else: 
+        return n
