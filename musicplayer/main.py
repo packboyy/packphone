@@ -2,39 +2,16 @@ import pygame
 from settings import *
 from catalog import *
 from musicplayer import musicplayer as mp
-import io
 
 running = True
 songplaying = False
 
-#assets
+#   assets
 pause_icon = pygame.image.load('ui/pause.png')
 play_icon = pygame.image.load('ui/play.png')
 back_icon = pygame.image.load('ui/back.png')
 forward_icon = pygame.image.load('ui/forward.png')
 catalog.linestodraw = artistindex
-
-class tintedsprite():
-    def draw(self, image, color, pos):
-        self.tinted = pygame.Surface(image.get_size(), pygame.SRCALPHA)
-        img_array = pygame.surfarray.array_alpha(image)
-        self.tinted.fill((color[0], color[1], color[2], 255))
-        tinted_array = pygame.surfarray.pixels_alpha(self.tinted)
-        # Copy the alpha values from the original to preserve transparency
-        tinted_array[:] = img_array
-        del tinted_array
-        # Draw the result to screen
-        screen.blit(self.tinted, pos)
-
-class cover():
-    def __init__(self, fromsong):
-            self.img_data = io.BytesIO(fromsong.albumart)
-            self.album_surface = pygame.image.load(self.img_data)
-    def draw(self, pos, size):
-        #ALBUM ART
-        #turns binary shlock into readable image data
-            album_art = pygame.transform.scale(self.album_surface, pos)
-            screen.blit(album_art, size)
 
 playingicon = tintedsprite()
 
@@ -54,11 +31,9 @@ while running:
                 if event.key == pygame.K_s:
                     catalog.selected += 1
                     catalog.selected = clamp(catalog.selected, 0, len(catalog.linestodraw) - 1)
-                    print(catalog.selected)
                 if event.key == pygame.K_w:
                     catalog.selected -= 1
                     catalog.selected = clamp(catalog.selected, 0, len(catalog.linestodraw) - 1)
-                    print(catalog.selected)
                 if event.key == pygame.K_d:
                     catalog.select()
                 if event.key == pygame.K_a:
@@ -70,35 +45,38 @@ while running:
     
     screen.fill((background_color))
 
-    #NOW LISTENING SCREEN
-    # Draw album art
+    # NOW LISTENING SCREEN
     pygame.draw.rect(screen, border_color, pygame.Rect(padding, padding, screen_width-(padding*2), screen_width-(padding*2)))
     if mp.nowplaying:
-        bigcover = cover(mp.nowplaying)
-        bigcover.draw((screen_width-(padding*2)-4, screen_width-(padding*2)-4), (padding + 2, padding + 2))
+        if not hasattr(mp, 'current_cover') or mp.nowplaying != mp.last_played:
+            mp.current_cover = cover(mp.nowplaying)
+            mp.last_played = mp.nowplaying
+        mp.current_cover.draw((screen_width-(padding*2)-4, screen_width-(padding*2)-4), (padding + 2, padding + 2))
 
-    #song and artist name
+    # song and artist name
     song_title = mp.nowplaying.songtitle if mp.nowplaying and hasattr(mp.nowplaying, 'songtitle') else '...'
     font.render_to(screen, (padding, screen_width), str(song_title), border_color)
     artist_name = mp.nowplaying.artist if mp.nowplaying else '...'
     font.render_to(screen, (padding, screen_width + padding + font_size), str(artist_name), border_color)
     album_name = mp.nowplaying.album if mp.nowplaying else '...'
     font.render_to(screen, (screen_width-padding - font.get_rect(album_name).width, screen_width + padding + font_size), str(album_name), border_color)
-    #SONG POSITION BAR
-
+    
+    # SONG POSITION BAR
     pygame.draw.rect(screen, accent_color, pygame.Rect(padding, screen_width + (2*padding) + (2*font_size), (screen_width-(padding*2)), 10))
     pygame.draw.rect(screen, border_color, pygame.Rect(padding, screen_width + (2*padding) + (2*font_size), ((screen_width-padding) * mp.get_position_percentage()), 10))
+    
+    # PLAY/PAUSE ICON
     if mp.is_playing():
         playingicon.draw(pause_icon, border_color, (padding, screen_width + (2*padding) + (3*font_size)))
-    if not mp.is_playing():
+    else:
         playingicon.draw(play_icon, border_color, (padding, screen_width + (2*padding) + (3*font_size)))
     
-    # draw catalog if it's either fully visible or mid aniamtion
+    # draw catalog if it's either fully visible or mid animation
     if catalog.viewingcatalog or catalog.is_animating:
         catalog.animate(not catalog.viewingcatalog)
         catalog.drawcatalog()
 
     pygame.display.flip()
-    pygame.time.Clock().tick(120)
+    pygame.time.Clock().tick(60)
 
 pygame.quit()
