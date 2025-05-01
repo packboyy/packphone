@@ -1,6 +1,7 @@
 import pygame
 from settings import *
 from catalog import *
+from queue import *
 from musicplayer import musicplayer as mp
 
 running = True
@@ -21,7 +22,11 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
-                catalog.toggle()
+                if queue.viewingqueue == False:
+                    catalog.toggle()
+            if event.key == pygame.K_q:
+                if catalog.viewingcatalog == False:
+                    queue.toggle()
             if event.key == pygame.K_SPACE:
                 if mp.songplaying:
                     mp.pause_music()
@@ -42,9 +47,12 @@ while running:
                     catalog.scroll(True)
                 if event.key == pygame.K_q:
                     catalog.scroll(False)
+                if event.key == pygame.K_r:
+                    if hasattr(catalog.linestodraw[catalog.selected], 'songtitle'):
+                        queue.songqueue.append(catalog.linestodraw[catalog.selected])
     
     screen.fill((background_color))
-
+    queue.playqueue()
     # NOW LISTENING SCREEN
     pygame.draw.rect(screen, border_color, pygame.Rect(padding, padding, screen_width-(padding*2), screen_width-(padding*2)))
     if mp.nowplaying:
@@ -75,7 +83,10 @@ while running:
     if catalog.viewingcatalog or catalog.is_animating:
         catalog.animate(not catalog.viewingcatalog)
         catalog.drawcatalog()
-
+    if queue.viewingqueue or queue.is_animating:
+        queue.animate(not queue.viewingqueue)
+        queue.draw()
+    print(f"Queue animation: pos={queue.pos}, targetpos={queue.targetpos}, distance={queue.targetpos - queue.pos}")
     pygame.display.flip()
     pygame.time.Clock().tick(60)
 

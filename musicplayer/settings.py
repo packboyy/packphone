@@ -22,6 +22,8 @@ border_color = (100, 100, 255)
 catalogpadding = 40
 catalogwidth = (screen_width - catalogpadding)
 padding = 5
+programIcon = pygame.image.load('icon.png')
+pygame.display.set_icon(programIcon)
 
 def clamp(n, min, max): 
     if n < min:
@@ -49,9 +51,8 @@ class cover():
     def __init__(self, fromsong):
         self.img_data = io.BytesIO(fromsong.albumart)
         self.album_surface = pygame.image.load(self.img_data)
-        self.scaled_cache = {}
         
     def draw(self, size, pos):
-        if size not in self.scaled_cache:
-            self.scaled_cache[size] = pygame.transform.scale(self.album_surface, size)
-        screen.blit(self.scaled_cache[size], pos)
+        img = pygame.transform.scale(self.album_surface, size)
+        img.convert_alpha()
+        screen.blit(img, pos)

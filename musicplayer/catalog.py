@@ -19,7 +19,7 @@ class catalog():
     
     pos = -catalogwidth
     animation_speed = 0.4
-    is_animating = True
+    is_animating = False
     target_position = 0
     
     linestodraw = []
@@ -27,6 +27,9 @@ class catalog():
     albumsPagesIndex = []
     playlistsPagesIndex = []
     currentPagesIndex = artistsPagesIndex
+
+    selection_tween = Tween(0.0, 1.0, 70, Easing.QUAD, EasingMode.OUT)
+    last_selected = selected
     
     PAGE_MAPS = {
         0: ('Artists', artistsPagesIndex, lambda: artistindex.copy()),
@@ -36,19 +39,17 @@ class catalog():
 
     @staticmethod
     def get_selection_animation():
-        if not hasattr(catalog, '_selection_tween') or catalog._last_selected != catalog.selected:
-            catalog._selection_tween = Tween(0.0, 1.0, 70, Easing.QUAD, EasingMode.OUT)
-            catalog._selection_tween.start()
-            catalog._last_selected = catalog.selected
+        if catalog.last_selected != catalog.selected:
+            catalog.selection_tween.start()
+            catalog.last_selected = catalog.selected
         
-        catalog._selection_tween.update()
-        return catalog._selection_tween.value
+        catalog.selection_tween.update()
+        return catalog.selection_tween.value
 
     @staticmethod
     def animate(reversed):
         if catalog.is_animating:
             catalog.target_position = -catalogwidth if reversed else 0
-            catalog._catalog_tween = Tween(catalog.pos, catalog.target_position, 150, Easing.QUAD, EasingMode.OUT)
             distance = catalog.target_position - catalog.pos
             catalog.pos += distance * catalog.animation_speed
             if abs(distance) < 2:
@@ -59,11 +60,17 @@ class catalog():
     def reset_animation(reversed=False):
         catalog.pos = 0 if reversed else -catalogwidth
         catalog.is_animating = True
+        
+    @staticmethod
+    def toggle():
+        catalog.viewingcatalog = not catalog.viewingcatalog
+        catalog.is_animating = True
+        catalog.reset_animation(not catalog.viewingcatalog)
     
     @staticmethod
     def drawcatalog():
-        pygame.draw.rect(screen, border_color, pygame.Rect((catalog.pos, 0), (screen_width-catalogpadding+2, screen_height)))
-        pygame.draw.rect(screen, background_color, pygame.Rect((catalog.pos, 0), (screen_width-catalogpadding, screen_height)))
+        pygame.draw.rect(screen, border_color, pygame.Rect((catalog.pos, 0), (catalogwidth+2, screen_height)))
+        pygame.draw.rect(screen, background_color, pygame.Rect((catalog.pos, 0), (catalogwidth, screen_height)))
         
         for line, item in enumerate(catalog.linestodraw):
             entrytext = item.songtitle if hasattr(item, 'songtitle') else item
@@ -89,18 +96,12 @@ class catalog():
                                                         (font_size * 2) - padding*2, catalog.headerwidth/3, padding))
     
     @staticmethod
-    def toggle():
-        catalog.viewingcatalog = not catalog.viewingcatalog
-        catalog.is_animating = True
-        catalog.reset_animation(not catalog.viewingcatalog)
-    
-    @staticmethod
     def select():
         current_stack = catalog.get_current_stack()
         selected_item = catalog.linestodraw[catalog.selected]
 
         if hasattr(selected_item, 'songtitle'):
-            musicplayer.play_music(selected_item)
+            queue.play_music(selected_item)
             catalog.toggle()
             catalog.selected = 0
         elif selected_item in artistindex:

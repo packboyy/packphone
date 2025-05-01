@@ -22,6 +22,7 @@ class index():
         artist = tags.artist or "Unknown"
         album = tags.album or "Unknown"
         title = tags.title or os.path.basename(songpath)
+        tracknumber = tags.track
         
         if artist not in music_index["artists"]:
             music_index["artists"][artist] = {"albums": {}}
@@ -30,9 +31,14 @@ class index():
             music_index["artists"][artist]["albums"][album] = {"songs": []}
 
         music_index["artists"][artist]["albums"][album]["songs"].append({
-            "title": title,
-            "path": songpath
+        "title": title,
+        "path": songpath,
+        "tracknumber": tracknumber
         })
+    
+        music_index["artists"][artist]["albums"][album]["songs"].sort(
+        key=lambda x: int(x["tracknumber"]) if x["tracknumber"] and str(x["tracknumber"]).isdigit() else float('inf')
+        )
 
     @staticmethod
     def load_or_build_index():
