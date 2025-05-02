@@ -1,6 +1,9 @@
 import pygame
 import pygame.freetype
 import io
+from configparser import ConfigParser
+config = ConfigParser()
+config.read('config.ini')
 
 #pygame
 pygame.init()
@@ -14,13 +17,15 @@ clock = pygame.time.Clock()
 move_per_second = 500
 
 #styling
-font_size = 16
+font_size = config.getint('styling', 'font_size')
 font = pygame.freetype.Font('oxanium.ttf', font_size)
-font_size_small = 12
+font_size_small = config.getint('styling', 'font_size_small')
 font_small = pygame.freetype.Font('oxanium.ttf', font_size_small)
-background_color = (255, 255, 255)
-accent_color = (100, 190, 240)
-border_color = (100, 100, 255)
+
+background_color = pygame.Color(config['styling']['background_color'])
+accent_color = pygame.Color(config['styling']['accent_color'])
+border_color = pygame.Color(config['styling']['border_color'])
+
 catalogpadding = 40
 catalogwidth = (screen_width - catalogpadding)
 padding = 5
@@ -40,7 +45,8 @@ class tintedsprite():
         self.cache = {}
         
     def draw(self, image, color, pos):
-        cache_key = (id(image), color)
+        color_tuple = (color.r, color.g, color.b, color.a)
+        cache_key = (id(image), color_tuple)
         if cache_key not in self.cache:
             self.tinted = pygame.Surface(image.get_size())
             self.tinted.set_colorkey((255, 255, 255))

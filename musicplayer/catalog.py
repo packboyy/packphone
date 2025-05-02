@@ -94,7 +94,14 @@ class catalog():
         font.render_to(screen, text_pos, str(catalog.page), border_color)
         pygame.draw.rect(screen, border_color, pygame.Rect(catalog.pos + padding + catalog.catalogpagepadding, 
                                                         (font_size * 2) - padding*2, catalog.headerwidth/3, padding))
-    
+    @staticmethod
+    def change_selection(direction):
+        catalog.selected += direction
+        if catalog.selected < 0:
+            catalog.selected = len(catalog.linestodraw) - 1
+        elif catalog.selected >= len(catalog.linestodraw):
+            catalog.selected = 0
+
     @staticmethod
     def select():
         current_stack = catalog.get_current_stack()

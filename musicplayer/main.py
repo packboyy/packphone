@@ -34,11 +34,9 @@ while running:
                     mp.resume_music()
             if catalog.viewingcatalog:
                 if event.key == pygame.K_s:
-                    catalog.selected += 1
-                    catalog.selected = clamp(catalog.selected, 0, len(catalog.linestodraw) - 1)
+                    catalog.change_selection(1)
                 if event.key == pygame.K_w:
-                    catalog.selected -= 1
-                    catalog.selected = clamp(catalog.selected, 0, len(catalog.linestodraw) - 1)
+                    catalog.change_selection(-1)
                 if event.key == pygame.K_d:
                     catalog.select()
                 if event.key == pygame.K_a:

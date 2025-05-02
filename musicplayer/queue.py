@@ -91,7 +91,7 @@ class queue:
              queue.songqueue.append(entry)
         elif entry in artistindex:
             return
-        elif entry in albumindex or selected_item in currentartist_albumindex:
+        elif entry in albumindex or entry in currentartist_albumindex:
             for artist in index.music_index["artists"]:
                 if entry in index.music_index["artists"][artist]["albums"]:
                     for song_data in index.music_index["artists"][artist]["albums"][entry]["songs"]:
