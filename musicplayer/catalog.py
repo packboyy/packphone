@@ -101,7 +101,7 @@ class catalog():
         selected_item = catalog.linestodraw[catalog.selected]
 
         if hasattr(selected_item, 'songtitle'):
-            queue.play_music(selected_item)
+            musicplayer.play_music(selected_item)
             catalog.toggle()
             catalog.selected = 0
         elif selected_item in artistindex:

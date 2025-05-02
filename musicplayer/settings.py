@@ -16,6 +16,8 @@ move_per_second = 500
 #styling
 font_size = 16
 font = pygame.freetype.Font('oxanium.ttf', font_size)
+font_size_small = 12
+font_small = pygame.freetype.Font('oxanium.ttf', font_size_small)
 background_color = (255, 255, 255)
 accent_color = (100, 190, 240)
 border_color = (100, 100, 255)

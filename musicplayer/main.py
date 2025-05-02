@@ -24,7 +24,7 @@ while running:
             if event.key == pygame.K_TAB:
                 if queue.viewingqueue == False:
                     catalog.toggle()
-            if event.key == pygame.K_q:
+            if event.key == pygame.K_r:
                 if catalog.viewingcatalog == False:
                     queue.toggle()
             if event.key == pygame.K_SPACE:
@@ -48,8 +48,14 @@ while running:
                 if event.key == pygame.K_q:
                     catalog.scroll(False)
                 if event.key == pygame.K_r:
-                    if hasattr(catalog.linestodraw[catalog.selected], 'songtitle'):
-                        queue.songqueue.append(catalog.linestodraw[catalog.selected])
+                    queue.addtoqueue(catalog.linestodraw[catalog.selected])
+            elif queue.viewingqueue:
+                if event.key == pygame.K_s:
+                    queue.selected += 1
+                    queue.selected = clamp(queue.selected, 0, len(queue.linestodraw) - 1)
+                if event.key == pygame.K_w:
+                    queue.selected -= 1
+                    queue.selected = clamp(queue.selected, 0, len(queue.linestodraw) - 1)
     
     screen.fill((background_color))
     queue.playqueue()
@@ -86,7 +92,6 @@ while running:
     if queue.viewingqueue or queue.is_animating:
         queue.animate(not queue.viewingqueue)
         queue.draw()
-    print(f"Queue animation: pos={queue.pos}, targetpos={queue.targetpos}, distance={queue.targetpos - queue.pos}")
     pygame.display.flip()
     pygame.time.Clock().tick(60)
 
